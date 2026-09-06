@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Here's what's happening with your business today.</p>
+        </div>
+
+        <button class="btn btn-primary">
+            + New Order
+        </button>
+    </header>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <span>Revenue</span>
+            <strong>₹{{ stats.revenue|floatformat:0 }}</strong>
+            <small class="positive">↑ 12.5% this month</small>
+        </div>
+
+        <div class="stat-card">
+            <span>Orders</span>
+            <strong>{{ stats.orders }}</strong>
+            <small class="positive">↑ 8.2% this month</small>
+        </div>
+
+        <div class="stat-card">
+            <span>Customers</span>
+            <strong>{{ stats.customers }}</strong>
+            <small class="positive">↑ 5.7% this month</small>
+        </div>
+
+        <div class="stat-card">
+            <span>Conversion Rate</span>
+            <strong>{{ stats.conversion_rate }}%</strong>
+            <small class="negative">↓ 1.1% this month</small>
+        </div>
+    </section>
+
+    <section class="dashboard-grid">
+        <div class="panel chart-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Revenue Overview</h2>
+                    <p>Performance over the last 7 days</p>
+                </div>
+
+                <select>
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>Last 90 days</option>
+                </select>
+            </div>
+
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Recent Orders</h2>
+                    <p>Your latest transactions</p>
+                </div>
+                <a href="#">View all</a>
+            </div>
+
+            <div class="orders">
+                {% for order in recent_orders %}
+                <div class="order">
+                    <div>
+                        <strong>{{ order.id }}</strong>
+                        <span>{{ order.customer }}</span>
+                    </div>
+
+                    <div class="order-right">
+                        <strong>₹{{ order.amount }}</strong>
+                        <span class="status">{{ order.status }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+const chartData = {{ chart_data|safe }};
+
+new Chart(document.getElementById("revenueChart"), {
+    type: "line",
+    data: {
+        labels: chartData.labels,
+        datasets: [{
+            label: "Revenue",
+            data: chartData.values,
+            borderColor: "#6366f1",
+            backgroundColor: "rgba(99, 102, 241, 0.1)",
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
+</script>
+{% endblock %}
